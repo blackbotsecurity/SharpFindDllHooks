@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.IO;
 
-namespace HookFinder
+namespace FindDllHooks
 {
     public class PEReader
     {
@@ -249,7 +249,7 @@ namespace HookFinder
 
         public PEReader(byte[] fileBytes)
         {
-            // Read in the DLL or EXE and get the timestamp
+            // Get timestamp from DLL or EXE
             using (MemoryStream stream = new MemoryStream(fileBytes, 0, fileBytes.Length))
             {
                 BinaryReader reader = new BinaryReader(stream);
@@ -354,25 +354,24 @@ namespace HookFinder
 
     public class Program
     {
-        public static bool HookChecker(string DLLname)
+        public static bool FindDllHooks(string DLLname)
         {
-            Console.WriteLine("Checking whether {0} is hooked...", DLLname);
             string DLLFullPath;
             try
             {
-                // not only get the full path of the DLL,this can prove wether the DLL is loaded or not
+                // Check if DLL is loaded
                 DLLFullPath = (Process.GetCurrentProcess().Modules.Cast<ProcessModule>().Where(x => DLLname.Equals(Path.GetFileName(x.FileName), StringComparison.OrdinalIgnoreCase)).FirstOrDefault().FileName);
             }
             catch
             {
-                throw new InvalidOperationException("DLL is not loaded!");
+                throw new InvalidOperationException("[!] DLL is not loaded; dllname:", DLLname);
             }
-            // reading the original in-disk DLL
+            // Reaad original DLL from disk
             byte[] OriginalDLLBytes = System.IO.File.ReadAllBytes(DLLFullPath);
             PEReader OriginalDLL = new PEReader(OriginalDLLBytes);
             for (int i = 0; i < OriginalDLL.FileHeader.NumberOfSections; i++)
             {
-                // only copy .text section
+                //  Copy .text section
                 if (OriginalDLL.ImageSectionHeaders[i].Section == ".text")
                 {
                     IntPtr byteLocationOnMemory = Marshal.AllocHGlobal((int)OriginalDLL.ImageSectionHeaders[i].SizeOfRawData);
@@ -392,24 +391,24 @@ namespace HookFinder
                             bool checkInMemoryTextSectionBytes = InMemoryTextSectionBytes.SequenceEqual(OriginalTextSectionBytes);
                             if (!checkInMemoryTextSectionBytes)
                             {
-                                Console.WriteLine("Hook detected at {0}.", DLLname);
+                                Console.WriteLine("[+] Hook found; memoryaddr: {0}; dllname:" ,DLLname);
                                 return true;
                             }
                             else
                             {
-                                Console.WriteLine("No hook detected at {0}.", DLLname);
+                                Console.WriteLine("[!] No hook found; memoryaddr: {0}; dllname:" ,DLLname);
                                 return false;
                             }
                         }
                         else
                         {
-                            Console.WriteLine("Failed to get handle of in-memory module.");
+                            Console.WriteLine("[-] Failed to get in-memory module handle; dllname:" ,DLLname);
                             return false;
                         }
                     }
                     else
                     {
-                        Console.WriteLine("Reading original DLL from disk failed.");
+                        Console.WriteLine("[-] Failed to read original DLL from disk; dllname:", DLLname);
                         return false;
                     }
                 }
@@ -421,7 +420,7 @@ namespace HookFinder
         {
             if (args.Length < 1)
             {
-                Console.WriteLine("Usage: HookFinder.exe <DLL Name>");
+                Console.WriteLine("Usage: FindDllHooks.exe <DllName>");
                 Environment.Exit(0);
             }
 
@@ -429,12 +428,12 @@ namespace HookFinder
 
             try
             {
-                HookChecker(dllName);
+                FindDllHooks(dllName);
             }
 
             catch (System.InvalidOperationException)
             {
-                Console.WriteLine("{0} is not found.", dllName);
+                Console.WriteLine("[!] {0} is not found.", dllName);
             }
         }
     }
