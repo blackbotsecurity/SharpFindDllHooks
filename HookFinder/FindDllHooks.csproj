@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{44CEA7AF-A69F-4E37-94CB-1E0CBD2F374F}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>HookFinder</RootNamespace>
-    <AssemblyName>HookFinder</AssemblyName>
+    <RootNamespace>FindDllHooks</RootNamespace>
+    <AssemblyName>FindDllHooks</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
