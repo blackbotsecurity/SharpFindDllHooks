@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30717.126
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HookFinder", "HookFinder\HookFinder.csproj", "{44CEA7AF-A69F-4E37-94CB-1E0CBD2F374F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FindDllHooks", "FindDllHooks\FindDllHooks.csproj", "{44CEA7AF-A69F-4E37-94CB-1E0CBD2F374F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
